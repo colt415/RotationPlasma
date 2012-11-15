@@ -1,0 +1,108 @@
+\documentclass{article}
+\title{HTTG Group Meeting}
+\author{Jingfei Ma}
+
+\usepackage{color}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\graphicspath{{figures/}}
+
+\begin{document}
+\maketitle
+\section{Introduction}
+Drift wave instabilities in rotating plasma in GAMMA-10 have been studied for a while, and linear frequency and growth rate for both conducting and resistive wall have been obtained numerically using shooting method. For next step, nonlinear simulation using BOUT++ code will be attempted to compare with theoretical results, as well as explore new characteristics. Given the simplicity, local radial modes with fixed poloidal mode number ($m$) will be the first problem to be simulated.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1.0\linewidth]{Gamma-10.eps}
+\caption{GAMMA-10 is a tandem mirror machine in Tsukuba, Japan. The central solenoid has the cylindrical geometry and mirror magnetic field configuration. Ambipolar traps are built outside the central cell to better confine particles with low pitch angle.}
+\end{figure}
+\section{Radial local modes}
+After certain reasonable assumptions, the radial eigenvalue equation is:
+\begin{equation}
+\frac{d^2\phi_{mk}}{d r^2}+\left(\frac{1}{r}-\frac{2 r}{a^2}\right)\frac{d\phi_{mk}}{d r}+\left(\frac{2}{a^2}\nu-\frac{m^2}{r^2}\right)\phi_{mk}=0
+\label{eq1}
+\end{equation}
+in which,
+\begin{equation}
+\nu (\tilde{\omega},m,\Omega,g_0/a)=-\frac{1}{\tilde{\omega}^2}\left[2m\Omega\tilde{\omega}+m^2\left(\frac{g_0}{a}+\Omega^2\right)\right]
+\label{eq2}
+\end{equation}
+in which, $m$ is poloidal mode number ($k_\theta=m/r$) and $\tilde{\omega}=\omega-m\Omega$ is shifted frequency. In this case, the local radial mode is quite straightforward:
+\begin{equation}
+\tilde{\omega}^2+\frac{4\Omega r^2}{m a^2}\tilde{\omega}+\frac{2 r^2}{a^2}\left(\frac{g_0}{a}+\Omega^2\right)=0
+\label{eq3}
+\end{equation}
+
+\section{Nonlinear equation set}
+A complete set of nonlinear equation is needed for simulation with BOUT++. Ion continuity equation and quasi-neutrality condition will give two nonlinear equations containing potential $\phi$ and density $n$. As parellel motion is not taken into consideration at this point, the problem is mainly 2-dimensional. Therefre, in the following calculation, further simplification will be made to ignore curvature of magnetic field ($g_0=0, \bm{B}=B\bm{e_z}$). From Ion momentum equation:
+\begin{equation}
+\bm{v_i}=\bm{v_{i\perp}}=\frac{e_z}{B}\times\nabla\phi+\frac{\bm{e_z}}{enB}\times\nabla p_i+\frac{M}{eB}\left(\bm{e_z}\times\frac{D\bm{v_i}}{D t}\right)
+\label{eq4}
+\end{equation}
+in which, these three terms represent $\bm{E}\times\bm{B}$ drift ($\bm{v_E}$), diamagnetic drift ($\bm{v_d}$) and polarization drift ($\bm{v_{pi}}$). For drift waves, the parameter $\epsilon=\omega/\omega_{ci}\ll 1$, where $\omega$ and $\omega_{ci}$ are drift wave frequency and ion gyro-frequency. Then the ordering of these three terms give us: $\bm{v_E},\bm{v_d}\sim O(1), \bm{v_{pi}}\sim O(\epsilon)$. Inserting $\bm{v_i}=\bm{v_E}+\bm{v_d}$ to ion continuity equation, given the fact that $\nabla\cdot (n\bm{v_d})=0$ and $\nabla\cdot\bm{v_E}=0$, the first nonlinear equation is:
+\begin{equation}
+\frac{\partial n}{\partial t}+[\phi, n]/B=0
+\label{eq5}
+\end{equation}
+where $\displaystyle [f,g]=\frac{\partial f}{\partial x}\frac{\partial g}{\partial y}-\frac{\partial f}{\partial y}\frac{\partial g}{\partial x}$.
+Now, consider quasi-neutrality ($n_i=n_e$), add continuity equation of ions and electrons together, we have a new equation $\nabla\cdot\bm{j}=0$, where $\bm{j}=e n(\bm{v_i}-\bm{v_e})$. By ignoring electron mass in electron momentum equation($m/M\ll 1$), electron velocity is:
+\begin{equation}
+\bm{v_e}=\bm{v_{e\perp}}=\bm{v_E}+\bm{v_d}
+\label{eq6}
+\end{equation}
+This relation results from one of the assumptions, that electrons and ions are both isothermal and $T_i\sim T_e$. From the previous results, $\bm{v_i}=\bm{v_E}+\bm{v_d}+\bm{v_{pi}}$,
+\begin{equation}
+\bm{j}=en\bm{v_{pi}}=\frac{M n}{B}\left(\bm{e_z}\times\left(\frac{d \bm{v_i}}{d t}+\bm{v_i}\cdot\nabla\bm{v_i}\right)\right)
+\label{eq7}
+\end{equation}
+In order to proceed and make approximations, a little review need to be done first. When talking about drift waves, there are two different types of oscillation. 
+\begin{itemize}
+\item Hydrodymamic oscillations, which yield that electron velocity has the same form as ion velocity ($\bm{v_e}=\bm{v_E}+\bm{v_d}$) and no kinetic effects are taken into account. In other words, electrons and ions are both treated fully fluid-like. In this case, $\lambda_{\|}\gg \lambda_{\perp}, \lambda_e $, $T_e\delta n_e/n_e\ll e\delta\phi $, where $\lambda_e$ is electron transit length. Also, the effects of finite larmor radius term is very important.
+
+\item Trapped particle modes, in which electrons are treated different from ions. Kinetic effects, such as resonance and damping, are added to electron equations. In this case, $\lambda_{\|}\sim \lambda_{\perp}, \lambda_e\gg \lambda_{\|}$, $T_e\delta n_e/n_e\sim e\delta\phi$, which means that electrons are in Maxwell-boltzmann equilibrium. 
+\end{itemize}
+Clearly, the calculations above are typically in Hydrodynamic oscillations regime. Therefore, finite larmor radius has to be taken into consideration, and $|\bm{v_d}|\ll |\bm{v_E}|$. In equation (\ref{eq7}), add FLR term ($\nabla\cdot\bm{\pi_f}$) and consider the relation (Hinton\&Horton):
+\begin{equation}
+M n\left(\frac{\partial}{\partial t}+\bm{v_i}\cdot\nabla\right)\bm{v_d}+\nabla\cdot\bm{\pi_f}=\nabla\chi
+\label{eq8}
+\end{equation}
+when divergence operator term is applied on this gradient term, $\nabla\cdot(\bm{e_z}\times\nabla\chi)=0$. Therefore, quasi-neutrality gives
+\begin{equation}
+\nabla\cdot\bm{j}=-\frac{M}{B^2}\nabla\cdot\left(n\left(\frac{\partial}{\partial t}+\bm{v_E}\cdot\nabla\right)\nabla\phi\right)=0
+\label{eq9}
+\end{equation} 
+Re-arrange equation (\ref{eq9}), we get the second nonlinear equation:
+\begin{equation}
+\nabla\cdot\left(n\frac{\partial}{\partial t}\nabla\phi\right)-\nabla\cdot\left(n[\nabla\phi,\phi]/B\right)=0
+\label{eq10}
+\end{equation}
+Therefore, equation (\ref{eq5}) and (\ref{eq10}) form a complete set of nonlinear equation about $n$ and $\phi$,
+\begin{equation*}
+\begin{cases}
+\displaystyle \frac{\partial n}{\partial t}+[\phi, n]/B=0\\
+\vspace{5pt}
+\displaystyle \nabla\cdot\left(n\frac{\partial}{\partial t}\nabla\phi\right)-\nabla\cdot\left(n[\nabla\phi,\phi]/B\right)=0
+\end{cases}
+\end{equation*}
+\section{Initial conditions}
+To make sure that the plasma has a rigid body rotation ($\Omega=const.$), background potential: 
+\begin{equation}
+\phi_0(r)=B\Omega r^2/2
+\label{eq11}
+\end{equation}
+For background density, we just use a gaussian profile:
+\begin{equation}
+n_0(r)=N_0\exp(-r^2/a^2)
+\label{eq12}
+\end{equation}
+in which, $a$ and $\Omega$ are constants. 
+\section{Things to do next}
+\begin{itemize}
+\item Normalize both the dispersion relation and nonlinear equations.
+\item Change the form of nonlinear equations to fit BOUT++ format.
+\item Construct 2-dimensional cylindrical annulus grid.
+\end{itemize}
+\end{document}

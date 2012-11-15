@@ -4,6 +4,8 @@
 *.nc
 *.o
 *.swp
+*.dvi
+*.aux
 
 boutdata/
 boututils/

@@ -3,7 +3,7 @@
 # settings used by the core code
 
 NOUT = 100       # number of time-steps
-TIMESTEP = 5e-3   # time between outputs
+TIMESTEP = 1e-1   # time between outputs
 
 ShiftXderivs = false # use shifted radial derivatives?
 TwistShift = false  # use twist-shift condition?
@@ -113,6 +113,7 @@ bndry_all = neumann # Zero-gradient on all boundaries
 [Ni]
 scale = 1.0e-3 # only perturbing Ni
 
-
+#[rho]
+#scale=1.0e-3
 #[jpar]
 #bndry_all = neumann # Zero-gradient on all boundaries

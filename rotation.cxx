@@ -30,10 +30,15 @@ int solve_phi_tridag(Field3D &r,Field3D &p,int flags);
 
 int physics_init(bool restarting){
   
-  mesh->get(Ni0,"Ni0");
+/*  mesh->get(Ni0,"Ni0");
   mesh->get(rho0,"rho0");
   mesh->get(phi0,"Phi0");
+*/
   
+  GRID_LOAD(Ni0);
+  GRID_LOAD(phi0);
+  GRID_LOAD(rho0);
+
   Options *globalOptions = Options::getRoot();
   Options *options = globalOptions->getSection("2fluid");
   OPTION(options, phi_flags,   0);
@@ -41,8 +46,10 @@ int physics_init(bool restarting){
   bout_solve(rho,"rho");
   bout_solve(Ni,"Ni");
   
+  phi=phi0;
+//  rho=0.0;  
   if(!restarting){
-    phi+=phi0;
+   // phi+=phi0;
     rho+=rho0;
   }
   
@@ -74,16 +81,19 @@ int physics_run(BoutReal t){
   ddt(Ni)-=vE_Grad(Ni,phi);
   
   //Vorticity
-  
+/*  
   vE.x=DDZ(phi)*sqrt(mesh->g33);
-  vE.y=0;
+  vE.y=0.0;
   vE.z=-DDX(phi)*sqrt(mesh->g11);
   vE.covariant=false;
   ddt(rho)=0.0;
   ddt(rho)+=Div(V_dot_Grad(vE,Grad(phi)));
   ddt(rho)+=V_dot_Grad(V_dot_Grad(vE,Grad(phi)),Ni)/Ni0;
   ddt(rho)+=V_dot_Grad(V_dot_Grad(vE,Grad(phi)),Ni0)/Ni0;
-
+*/
+  ddt(rho)=0.0;
+  ddt(rho)+=Ni*vE_Grad(rho,phi);
+  
   return 0;
 }
 

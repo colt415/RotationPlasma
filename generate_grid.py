@@ -7,19 +7,19 @@ from numpy import *
 
 grid=Dataset("rotation_local.nc",'w')
 
-x=grid.createDimension('x',5)
+x=grid.createDimension('x',20)
 y=grid.createDimension('y',5)
 
 grid.createVariable('nx','i4',())
 grid.createVariable('ny','i4',())
-grid.variables['nx'][:]=5
+grid.variables['nx'][:]=20
 grid.variables['ny'][:]=5
-nx=5
+nx=20
 ny=5
 
 dx=grid.createVariable('dx','f4',('x','y',))
 dy=grid.createVariable('dy','f4',('x','y',))
-dx[:,:]=0.01
+dx[:,:]=0.005
 dy[:,:]=0.01
 
 #contravariant metric tensor
@@ -38,7 +38,8 @@ g23[:,:]=0.0
 g11[:,:]=1.0
 g22[:,:]=1.0
 
-r=([0.98,0.99,1.00,1.01,1.02])
+r=linspace(0.95,1.045,20)
+
 for i in range(nx):
   g33[i,:]=r[i]**(-2)
 
@@ -51,7 +52,7 @@ Omega=-4.0
 phi0=grid.createVariable('phi0','f4',('x','y',))
 
 for i in range(nx):
-  phi0[i,:]=4.0+Omega*r[i]**2/2
+  phi0[i,:]=2.0+Omega*r[i]**2/2
 
 #background density
 Ni0=grid.createVariable('Ni0','f4',('x','y',))

@@ -2,8 +2,8 @@
 ##################################################
 # settings used by the core code
 
-NOUT = 100       # number of time-steps
-TIMESTEP = 1.0e-2   # time between outputs
+NOUT = 200       # number of time-steps
+TIMESTEP = 2e-2   # time between outputs
 
 ShiftXderivs = false # use shifted radial derivatives?
 TwistShift = false  # use twist-shift condition?
@@ -99,7 +99,7 @@ zs_opt = 2
 
 #ys_mode = 2 #
 
-zs_mode = 2 # toroidal mode number
+zs_mode = 6 # toroidal mode number
 
 # boundary conditions
 # -------------------
@@ -110,8 +110,8 @@ zs_mode = 2 # toroidal mode number
 
 bndry_all = neumann # Zero-gradient on all boundaries
 
-[Ni]
-scale = 1.0e-3 # only perturbing Ni
+#[Ni]
+#scale = 1.0e-3 # only perturbing Ni
 
 [rho]
 scale=1.0e-3

@@ -16,7 +16,7 @@
 Field2D Ni0, phi0, rho0;
 
 //3D evolving fields
-Field3D Ni,phi,rho;
+Field3D Ni,phi,rho,dtphi;
 
 //3D total values
 Field3D Nit, phit, rhot;
@@ -28,7 +28,7 @@ Vector3D vE;
 int phi_flags;
 //Field routines, inverse laplacian
 //int solve_phi_tridag(Field3D &r,Field3D &p,int flags);
-
+BoutReal pi=3.14159265;
 //bool bout_exb,arakawa;
 
 int physics_init(bool restarting){
@@ -60,6 +60,7 @@ int physics_init(bool restarting){
   
   //Add other variables to be dumped to file
   dump.add(phi,"phi",1);
+//  dump.add(dtphi,"dtphi",1);
   
   dump.add(Ni0,"Ni0",0);
   dump.add(phi0,"phi0",0);
@@ -81,7 +82,7 @@ const Field3D vE_Grad(const Field3D &f, const Field3D &p);
 int physics_run(BoutReal t){
   
 //  solve_phi_tridag(rho,phi,phi_flags);
-  phi=invert_laplace(rho/Ni0,phi_flags,NULL);
+  phi=invert_laplace(rho,phi_flags,NULL);
 //  phi.applyBoundary();
 
   mesh->communicate(Ni,rho,phi);
@@ -93,41 +94,19 @@ int physics_run(BoutReal t){
   ddt(Ni)-=vE_Grad(Ni0,phi);
   ddt(Ni)-=vE_Grad(Ni,phi0);
   ddt(Ni)-=vE_Grad(Ni0,phi0);
-  ddt(Ni)-=vE_Grad(Ni,phi);
-  
+//  ddt(Ni)-=vE_Grad(Ni,phi);
+//  ddt(Ni)*=2*pi;
+//  dtphi=0.0;
+//  dtphi+=ddt(phi);
   //Vorticity
-/*  
-  vE.x=DDZ(phi)*sqrt(mesh->g33);
-  vE.y=0.0;
-  vE.z=-DDX(phi)*sqrt(mesh->g11);
-  vE.covariant=false;
   ddt(rho)=0.0;
-  ddt(rho)+=Div(V_dot_Grad(vE,Grad(phi)));
-  ddt(rho)+=V_dot_Grad(V_dot_Grad(vE,Grad(phi)),Ni)/Ni0;
-  ddt(rho)+=V_dot_Grad(V_dot_Grad(vE,Grad(phi)),Ni0)/Ni0;
-*/
-/* 
-  vE.x=DDZ(phi+phi0)*sqrt(mesh->g33);
-  vE.y=0.0;
-  vE.z=-DDX(phi+phi0)*sqrt(mesh->g11);
-  vE.covariant=false;
-  vE.applyBoundary();
-  mesh->communicate(vE);
-*/
-  ddt(rho)=0.0;
-//  ddt(rho)+=V_dot_Grad(vE,Grad(phi))*Grad(Ni)/Ni0;
-//  ddt(rho)+=DDX(Ni)*vE_Grad(DDX(phi),phi)/Ni0;
-//  ddt(rho)+=DDZ(Ni)*sqrt(mesh->g33)*vE_Grad(DDZ(phi)*sqrt(mesh->g33),phi)/Ni0;
-  ddt(rho)-=vE_Grad(rho,phi);
   ddt(rho)-=vE_Grad(rho,phi0);
-//  ddt(rho)-=vE_Grad(rho0,phi0); 
-
-  ddt(rho)-=(mesh->g11)*sqrt(mesh->g11)*sqrt(mesh->g33)*DDX(Ni0)*(DDZ(phi)*D2DX2(phi0)-DDX(phi0)*D2DXDZ(phi));
-
-  ddt(rho)-=(mesh->g33)*sqrt(mesh->g33)*sqrt(mesh->g11)*DDZ(Ni)*(DDZ(phi)*D2DXDZ(phi)-DDX(phi0)*D2DZ2(phi));
-//  ddt(rho)+=Div(V_dot_Grad(vE,Grad(phi)));
-
+//  ddt(rho)-=vE_Grad(rho,phi);
+//  ddt(rho)-=(mesh->g11)*sqrt(mesh->g11)*sqrt(mesh->g33)*DDX(Ni0+Ni)*(DDZ(phi)*D2DX2(phi0+phi)-DDX(phi0+phi)*D2DXDZ(phi))/Ni0;
+//  ddt(rho)-=(mesh->g33)*sqrt(mesh->g11)*DDZ(Ni)*(DDZ(phi)*D2DXDZ(phi)-(mesh->g33)*DDZ(phi)*DDZ(phi)-sqrt(mesh->g33)*DDX(phi0+phi)*D2DZ2(phi))/Ni0;
+  ddt(rho)-=(mesh->g11)*sqrt(mesh->g11)*sqrt(mesh->g33)*DDX(Ni0)*(DDZ(phi)*D2DX2(phi0)-DDX(phi0)*D2DXDZ(phi))/Ni0;
   return 0;
+
 }
 
 
